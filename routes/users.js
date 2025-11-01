@@ -185,7 +185,7 @@ router.put("/edit", auth, async (req, res) => {
     return res.status(400).json(validBody.error.details);
   }
   try {
-    let token_id = req.userToken.id;
+    let token_id = req.tokenData._id;
     let updateData = await UserModel.updateOne({ _id: token_id }, req.body)
     res.status(200).json(updateData);
   } catch (err) {

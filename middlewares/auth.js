@@ -12,7 +12,7 @@ exports.auth = (req, res, next) => {
       next();
     }
     catch (err) {
-      return res.status(401).json({ err: "Token invalid (if you hacker) or expired" });
+      return res.status(401).json({ err: "Token invalid or expired" });
     }
   }
 
@@ -33,6 +33,6 @@ exports.auth = (req, res, next) => {
       }
     }
     catch (err) {
-      return res.status(401).json({ err: "Token invalid (if you hacker) or expired" });
+      return res.status(401).json({ err: "Token invalid or expired" });
     }
   }
