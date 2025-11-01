@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String, default: "user"
     },
-    verifictionCode: String,
-    verifiction: {
+    verificationCode: String,
+    verification: {
         type: Boolean, default: false
     },
 });

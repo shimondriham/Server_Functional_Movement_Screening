@@ -60,12 +60,12 @@ router.post("/", async (req, res) => {
   }
   try {
     let user = new UserModel(req.body);
-    user.verifictionCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
+    user.verificationCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
     let emailExists = await UserModel.findOne({ email: user.email });
     if (emailExists) {
       return res.json({ err: "The email already exists" });
     }
-    await sendMail(user.email, "code", user.verifictionCode);
+    await sendMail(user.email, "code", user.verificationCode);
     await user.save();
     // user.password = "****";
     return res.status(201).json(user);
@@ -86,7 +86,7 @@ router.post("/login", async (req, res) => {
     if (!user) {
       return res.status(401).json({ err: "Email not found!" });
     }
-    if (!user.verifiction) {
+    if (!user.verification) {
       return res.status(401).json({ err: "Email not verified!" });
     }
     if (req.body.password != user.password) {
@@ -104,13 +104,13 @@ router.post("/login", async (req, res) => {
 router.patch("/verification", async (req, res) => {
   try {
     let thisEmail = req.body.email;
-    let thisVerifictionCode = req.body.verifictionCode;
+    let thisVerificationCode = req.body.verificationCode;
     let user = await UserModel.findOne({ email: thisEmail });
-    if (user.verifictionCode != thisVerifictionCode) {
+    if (user.verificationCode != thisVerificationCode) {
       return res.json("Incorrect code");
     }
-    user.verifiction = true;
-    user.verifictionCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
+    user.verification = true;
+    user.verificationCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
     let data = await UserModel.updateOne({ _id: user._id }, user);
     res.status(200).json(data);
   }
@@ -125,8 +125,8 @@ router.patch("/verification", async (req, res) => {
 //   try {
 //     let thisEmail = req.body.email;
 //     let user = await UserModel.findOne({ email: thisEmail });
-//     user.verifictionCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
-//     await sendMail(user.email, "code", user.verifictionCode);
+//     user.verificationCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
+//     await sendMail(user.email, "code", user.verificationCode);
 //     let data = await UserModel.updateOne({ _id: user._id }, user);
 //     res.status(200).json(data);
 //   }
@@ -140,15 +140,15 @@ router.patch("/verification", async (req, res) => {
 // router.patch("/validation", async (req, res) => {
 //   try {
 //     let thisEmail = req.body.email;
-//     let thisVerifictionCode = req.body.validationCode;
+//     let thisVerificationCode = req.body.validationCode;
 //     let user = await UserModel.findOne({ email: thisEmail });
 //     if (!user) {
 //       return res.status(401).json({ err: "Email not found. Return to  forgot password page !"});
 //     }
-//     if (user.verifictionCode != thisVerifictionCode) {
+//     if (user.verificationCode != thisVerificationCode) {
 //       return res.json("Incorrect code");
 //     }
-//     user.verifictionCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
+//     user.verificationCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
 //     let data = await UserModel.updateOne({ _id: user._id }, user);
 //     res.status(200).json(data);
 //   }
