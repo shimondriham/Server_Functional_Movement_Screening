@@ -68,6 +68,7 @@ router.post("/", async (req, res) => {
     await sendMail(user.email, "code", user.verificationCode);
     await user.save();
     // user.password = "****";
+    // user.verificationCode = "****";
     return res.status(201).json(user);
   } catch (err) {
     console.log(err);
@@ -90,7 +91,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ err: "Email not verified!" });
     }
     if (req.body.password != user.password) {
-      return res.status(401).json({ err: "User or password is wrong" });
+      return res.status(401).json({ err: "Email or password is wrong" });
     }
     res.json({ token: genToken(user._id, user.role) });
   }
@@ -196,12 +197,12 @@ router.put("/edit", auth, async (req, res) => {
 })
 
 //Delete user
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',auth, async (req, res) => {
   let userId = req.params.id;
   try {
     let user = await UserModel.findByIdAndDelete(userId);
     if (user) {
-      res.status(200).json({ message: 'User deleted successfully' });
+      res.status(200).json({ message: `User deleted successfully` });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
