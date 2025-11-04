@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-main().catch((err) => console.log(err));
+main().catch((error) => console.log(error));
 
 async function main() {
   mongoose.set("strictQuery", false);

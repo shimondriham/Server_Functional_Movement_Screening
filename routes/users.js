@@ -1,8 +1,8 @@
-var express = require("express");
+const express = require("express");
 const { UserModel, validUser, validateLogin, genToken } = require("../models/userModel");
 const bcrypt = require("bcrypt")
 const mongoose = require('mongoose');
-var router = express.Router();
+const router = express.Router();
 const sendMail = require("../middlewares/sendMail");
 const { auth, authAdmin } = require("../middlewares/auth");
 const jwt = require("jsonwebtoken");
@@ -13,19 +13,17 @@ router.get("/",authAdmin, async (req, res) => {
   res.json(data);
 });
 
-
 /* GET single user by id */
 router.get("/single/:userId", async (req, res) => {
   try {
     let userId = req.params.userId;
     let data = await UserModel.findOne({ _id: userId });
     res.json(data);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json(error);
   }
 });
-
 
 /* GET single user by token */
 router.get("/myInfo", auth, async (req, res) => {
@@ -36,9 +34,9 @@ router.get("/myInfo", auth, async (req, res) => {
     let data = await UserModel.findOne({ _id: token_id }, { password: 0 })
     res.json(data);
   }
-  catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
+  catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 })
 
@@ -63,16 +61,16 @@ router.post("/", async (req, res) => {
     user.verificationCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
     let emailExists = await UserModel.findOne({ email: user.email });
     if (emailExists) {
-      return res.json({ err: "The email already exists" });
+      return res.json({ error: "The email already exists" });
     }
     await sendMail(user.email, "code", user.verificationCode);
     await user.save();
     // user.password = "****";
     // user.verificationCode = "****";
     return res.status(201).json(user);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 });
 
@@ -85,19 +83,19 @@ router.post("/login", async (req, res) => {
   try {
     let user = await UserModel.findOne({ email: req.body.email })
     if (!user) {
-      return res.status(401).json({ err: "Email not found!" });
+      return res.status(401).json({ error: "Email not found!" });
     }
     if (!user.verification) {
-      return res.status(401).json({ err: "Email not verified!" });
+      return res.status(401).json({ error: "Email not verified!" });
     }
     if (req.body.password != user.password) {
-      return res.status(401).json({ err: "Email or password is wrong" });
+      return res.status(401).json({ error: "Email or password is wrong" });
     }
     res.json({ token: genToken(user._id, user.role) });
   }
-  catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
+  catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 })
 
@@ -115,68 +113,11 @@ router.patch("/verification", async (req, res) => {
     let data = await UserModel.updateOne({ _id: user._id }, user);
     res.status(200).json(data);
   }
-  catch (err) {
-    console.log(err);
-    return res.status(500).json(err);
+  catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
   }
 })
-
-// Forgot password 
-// router.patch("/forgotpass", async (req, res) => {
-//   try {
-//     let thisEmail = req.body.email;
-//     let user = await UserModel.findOne({ email: thisEmail });
-//     user.verificationCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
-//     await sendMail(user.email, "code", user.verificationCode);
-//     let data = await UserModel.updateOne({ _id: user._id }, user);
-//     res.status(200).json(data);
-//   }
-//   catch (err) {
-//     console.log(err);
-//     return res.status(500).json(err);
-//   }
-// })
-
-// User authentication before password change
-// router.patch("/validation", async (req, res) => {
-//   try {
-//     let thisEmail = req.body.email;
-//     let thisVerificationCode = req.body.validationCode;
-//     let user = await UserModel.findOne({ email: thisEmail });
-//     if (!user) {
-//       return res.status(401).json({ err: "Email not found. Return to  forgot password page !"});
-//     }
-//     if (user.verificationCode != thisVerificationCode) {
-//       return res.json("Incorrect code");
-//     }
-//     user.verificationCode = (Math.floor(Math.random() * (99999 - 10000)) + 10000).toString();
-//     let data = await UserModel.updateOne({ _id: user._id }, user);
-//     res.status(200).json(data);
-//   }
-//   catch (err) {
-//     console.log(err);
-//     return res.status(500).json(err);
-//   }
-// })
-
-//  change password
-// router.patch("/changePass", async (req, res) => {
-//   try {
-//     let thisEmail = req.body.email;
-//     let newPass = req.body.password;
-//     let user = await UserModel.findOne({ email: thisEmail });
-//     if (!user) {
-//       return res.status(401).json({ err: "Email not found. Return to  forgot password page !" });
-//     }
-//     user.password = newPass
-//     let data = await UserModel.updateOne({ _id: user._id }, user);
-//     res.status(200).json(data);
-//   }
-//   catch (err) {
-//     console.log(err);
-//     return res.status(500).json(err);
-//   }
-// })
 
 
 // Update for user
@@ -189,9 +130,9 @@ router.put("/edit", auth, async (req, res) => {
     let token_id = req.tokenData._id;
     let updateData = await UserModel.updateOne({ _id: token_id }, req.body)
     res.status(200).json(updateData);
-  } catch (err) {
-    console.log(err);
-    res.status(400).send(err);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error);
   }
 
 })

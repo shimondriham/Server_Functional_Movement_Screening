@@ -1,9 +1,9 @@
-var createError = require("http-errors");
-var express = require("express");
+const createError = require("http-errors");
+const express = require("express");
 const cors = require('cors');
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 const { routesInit } = require("./routes/confing_route");
 require("./db/mongoConnect");
 require("./routes/confing_route");
@@ -28,13 +28,13 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function (error, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+  res.locals.message = error.message;
+  res.locals.error = req.app.get("env") === "development" ? error : {};
 
   // render the error page
-  res.status(err.status || 500);
+  res.status(error.status || 500);
   res.render("error");
 });
 
