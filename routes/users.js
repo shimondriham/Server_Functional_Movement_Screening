@@ -8,7 +8,7 @@ const { auth, authAdmin } = require("../middlewares/auth");
 const jwt = require("jsonwebtoken");
 
 /* GET users list. */
-router.get("/",authAdmin, async (req, res) => {
+router.get("/", authAdmin, async (req, res) => {
   let data = await UserModel.find({});
   res.json(data);
 });
@@ -105,6 +105,9 @@ router.patch("/verification", async (req, res) => {
     let thisEmail = req.body.email;
     let thisVerificationCode = req.body.verificationCode;
     let user = await UserModel.findOne({ email: thisEmail });
+    if (!user) {
+      return res.status(401).json({ error: "Email not found!" });
+    }
     if (user.verificationCode != thisVerificationCode) {
       return res.json("Incorrect code");
     }
@@ -138,7 +141,7 @@ router.put("/edit", auth, async (req, res) => {
 })
 
 //Delete user
-router.delete('/:id',auth, async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
   let userId = req.params.id;
   try {
     let user = await UserModel.findByIdAndDelete(userId);
