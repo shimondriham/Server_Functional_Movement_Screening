@@ -1,5 +1,5 @@
 const express = require("express");
-const { UserModel, validUser, validateLogin, genToken } = require("../models/userModel");
+const { UserModel, validUser, validateLogin, validDetails, genToken } = require("../models/userModel");
 const bcrypt = require("bcrypt")
 const mongoose = require('mongoose');
 const router = express.Router();
@@ -123,22 +123,43 @@ router.patch("/verification", async (req, res) => {
 })
 
 
-// Update for user
+// Update for {weight, height, dateOfBirth}
 router.put("/edit", auth, async (req, res) => {
-  let validBody = validUser(req.body);
-  if (validBody.error) {
-    return res.status(400).json(validBody.error.details);
-  }
   try {
-    let token_id = req.tokenData._id;
-    let updateData = await UserModel.updateOne({ _id: token_id }, req.body)
-    res.status(200).json(updateData);
+    const token_id = req.tokenData._id;
+  const details = Array.isArray(req.body) ? Object.fromEntries(req.body) : req.body || {};
+
+  const valid = validDetails(details);
+  if (valid.error) return res.status(400).json(valid.error.details);
+
+  const allowed = ["weight", "height", "dateOfBirth"];
+    const updateObj = {};
+
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(details, key) && details[key] !== undefined) {
+        updateObj[key] = key === "dateOfBirth" ? new Date(details[key]) : details[key];
+      }
+    }
+
+    if (Object.keys(updateObj).length === 0) {
+      return res.status(200).json({ message: "No changes detected" });
+    }
+
+    const updated = await UserModel.findByIdAndUpdate(
+      token_id,
+      { $set: updateObj },
+      { new: true, projection: { password: 0 ,verificationCode:0} }
+    );
+
+    if (!updated) return res.status(404).json({ error: "User not found" });
+
+    return res.status(200).json(updated);
   } catch (error) {
     console.log(error);
-    res.status(400).send(error);
+    return res.status(400).send(error);
   }
+});
 
-})
 
 //Delete user
 router.delete('/:id', auth, async (req, res) => {

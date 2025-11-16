@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema({
     fullName: String,
     email: String,
     password: String,
+    height: Number,
+    weight: Number,
+    dateOfBirth: Date,
     role: {
         type: String, default: "user"
     },
@@ -23,6 +26,17 @@ exports.validUser = (_bodyData) => {
         fullName: Joi.string().min(2).max(99).required(),
         email: Joi.string().min(5).max(99).email().required(),
         password: Joi.string().min(2).max(99).required(),
+    });
+
+    return joiSchema.validate(_bodyData);
+};
+
+exports.validDetails = (_bodyData) => {
+
+    let joiSchema = Joi.object({
+        height: Joi.number(),
+        weight: Joi.number(),
+        dateOfBirth: Joi.date(),
     });
 
     return joiSchema.validate(_bodyData);
