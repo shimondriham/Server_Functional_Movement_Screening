@@ -9,6 +9,13 @@ const userSchema = new mongoose.Schema({
     height: Number,
     weight: Number,
     dateOfBirth: Date,
+    difficulty:String,
+    equipment:Array,
+    frequency:String,
+    goal:String,
+    medical:Array,
+    timePerDay:String,
+    workouts:Array,
     role: {
         type: String, default: "user"
     },
@@ -37,6 +44,13 @@ exports.validDetails = (_bodyData) => {
         height: Joi.number(),
         weight: Joi.number(),
         dateOfBirth: Joi.date(),
+        difficulty: Joi.string(),
+        equipment: Joi.array(),
+        frequency: Joi.string(),
+        goal: Joi.string(),
+        medical: Joi.array(),
+        timePerDay: Joi.string(),
+        workouts: Joi.array(),
     });
 
     return joiSchema.validate(_bodyData);

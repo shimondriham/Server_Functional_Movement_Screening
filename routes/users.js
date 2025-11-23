@@ -127,12 +127,15 @@ router.patch("/verification", async (req, res) => {
 router.put("/edit", auth, async (req, res) => {
   try {
     const token_id = req.tokenData._id;
-  const details = Array.isArray(req.body) ? Object.fromEntries(req.body) : req.body || {};
+    const details = Array.isArray(req.body) ? Object.fromEntries(req.body) : req.body || {};
 
-  const valid = validDetails(details);
-  if (valid.error) return res.status(400).json(valid.error.details);
+    const valid = validDetails(details);
+    if (valid.error) {
+      console.log(valid.error);
+      return res.status(400).json(valid.error.details);
+    }
 
-  const allowed = ["weight", "height", "dateOfBirth"];
+    const allowed = ["weight", "height", "dateOfBirth", "difficulty", "equipment", "frequency", "goal", "medical", "timePerDay", "workouts"];
     const updateObj = {};
 
     for (const key of allowed) {
@@ -148,7 +151,7 @@ router.put("/edit", auth, async (req, res) => {
     const updated = await UserModel.findByIdAndUpdate(
       token_id,
       { $set: updateObj },
-      { new: true, projection: { password: 0 ,verificationCode:0} }
+      { new: true, projection: { password: 0, verificationCode: 0 } }
     );
 
     if (!updated) return res.status(404).json({ error: "User not found" });
