@@ -8,6 +8,7 @@ router.get("/", (req, res, next) => {
   res.json({ msg: "Work from games.js" });
 });
 
+
 router.get("/allgames",auth, async (req, res, next) => {
   try {
     let games = await gameModel.find();
@@ -18,6 +19,7 @@ router.get("/allgames",auth, async (req, res, next) => {
     res.status(500).json({ msg: "Error", error: err });
   }
 });
+
 
 
 router.post("/", auth, async (req, res) => {
@@ -38,12 +40,26 @@ router.post("/", auth, async (req, res) => {
 
 
 
-router.patch("/updateGame", async (req, res) => {
+router.patch("/updateGame ", async (req, res) => {
   const thisgame = req.body;
   try {
     let data = await gameModel.updateOne(
       { _id: thisgame._id },
       { [thisgame.name]: thisgame.game }
+    );
+    console.log(data)
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error", error: err });
+  }
+});
+
+router.patch("/currentGame", async (req, res) => {
+  const thisgame = req.body;
+  try {
+    let data = await gameModel.findOne(
+      { _id: thisgame._id },
     );
     console.log(data)
     res.json(data);
