@@ -20,6 +20,18 @@ router.get("/allgames",auth, async (req, res, next) => {
   }
 });
 
+router.get("/allUsergames",auth, async (req, res, next) => {
+  const token_id = req.tokenData._id;
+  try {
+    let games = await gameModel.find({idUser:token_id});
+    console.log(games);
+    res.json(games);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error", error: err });
+  }
+});
+
 
 
 router.post("/", auth, async (req, res) => {
