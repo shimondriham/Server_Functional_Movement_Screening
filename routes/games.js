@@ -8,8 +8,7 @@ router.get("/", (req, res, next) => {
   res.json({ msg: "Work from games.js" });
 });
 
-
-router.get("/allgames",auth, async (req, res, next) => {
+router.get("/allgames", auth, async (req, res, next) => {
   try {
     let games = await gameModel.find();
     console.log(games);
@@ -20,7 +19,17 @@ router.get("/allgames",auth, async (req, res, next) => {
   }
 });
 
-
+router.get("/mygame", auth, async (req, res, next) => {
+  const token_id = req.tokenData._id;
+  try {
+    let games = await gameModel.find({ idUser: token_id });
+    console.log(games);
+    res.json(games);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error", error: err });
+  }
+});
 
 router.post("/", auth, async (req, res) => {
   const token_id = req.tokenData._id;
@@ -38,8 +47,6 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-
-
 router.patch("/updateGame ", async (req, res) => {
   const thisgame = req.body;
   try {
@@ -47,7 +54,7 @@ router.patch("/updateGame ", async (req, res) => {
       { _id: thisgame._id },
       { [thisgame.name]: thisgame.game }
     );
-    console.log(data)
+    console.log(data);
     res.json(data);
   } catch (err) {
     console.log(err);
@@ -58,10 +65,8 @@ router.patch("/updateGame ", async (req, res) => {
 router.patch("/currentGame", async (req, res) => {
   const thisgame = req.body;
   try {
-    let data = await gameModel.findOne(
-      { _id: thisgame._id },
-    );
-    console.log(data)
+    let data = await gameModel.findOne({ _id: thisgame._id });
+    console.log(data);
     res.json(data);
   } catch (err) {
     console.log(err);
