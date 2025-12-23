@@ -9,7 +9,7 @@ router.get("/", (req, res, next) => {
 });
 
 
-router.get("/allgames",auth, async (req, res, next) => {
+router.get("/allgames", auth, async (req, res, next) => {
   try {
     let games = await gameModel.find();
     console.log(games);
@@ -20,10 +20,22 @@ router.get("/allgames",auth, async (req, res, next) => {
   }
 });
 
-router.get("/allUsergames",auth, async (req, res, next) => {
+router.get("/usergames/:id", auth, async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    let games = await gameModel.find({ idUser: id });
+    console.log(games);
+    res.json(games);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error", error: err });
+  }
+});
+
+router.get("/allUsergames", auth, async (req, res, next) => {
   const token_id = req.tokenData._id;
   try {
-    let games = await gameModel.find({idUser:token_id});
+    let games = await gameModel.find({ idUser: token_id });
     console.log(games);
     res.json(games);
   } catch (err) {
