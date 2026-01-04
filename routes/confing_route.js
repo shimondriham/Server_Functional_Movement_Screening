@@ -1,4 +1,3 @@
-
 const indexR = require("./index");
 const usersR = require("./users");
 const emailR = require("./email");
@@ -26,4 +25,3 @@ exports.routesInit = (app) => {
     res.status(404).json({ msg_error: "Url not found , 404!" });
   });
 };
-
