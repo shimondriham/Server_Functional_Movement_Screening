@@ -59,7 +59,7 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-router.patch("/updateGame ", async (req, res) => {
+router.patch("/updateGame", async (req, res) => {
   const thisgame = req.body;
   try {
     let data = await gameModel.updateOne(
