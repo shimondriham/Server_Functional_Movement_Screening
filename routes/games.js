@@ -86,4 +86,17 @@ router.patch("/currentGame", async (req, res) => {
   }
 });
 
+router.get("/currentGame/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    let data = await gameModel.findById(id);
+    if (!data) return res.status(404).json({ msg: "Game not found" });
+    console.log(data);
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ msg: "Error", error: err });
+  }
+});
+
 module.exports = router;
